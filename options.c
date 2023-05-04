@@ -1198,64 +1198,7 @@ static int parse_zoned_distribution(struct thread_data *td, const char *input,
 
 static int str_random_distribution_cb(void *data, const char *str)
 {
-	struct thread_data *td = cb_data_to_td(data);
-	double val;
-	double center = -1;
-	char *nr;
-
-	if (td->o.random_distribution == FIO_RAND_DIST_ZIPF)
-		val = FIO_DEF_ZIPF;
-	else if (td->o.random_distribution == FIO_RAND_DIST_PARETO)
-		val = FIO_DEF_PARETO;
-	else if (td->o.random_distribution == FIO_RAND_DIST_GAUSS)
-		val = 0.0;
-	else if (td->o.random_distribution == FIO_RAND_DIST_ZONED)
-		return parse_zoned_distribution(td, str, false);
-	else if (td->o.random_distribution == FIO_RAND_DIST_ZONED_ABS)
-		return parse_zoned_distribution(td, str, true);
-	else
-		return 0;
-
-	nr = get_opt_postfix(str);
-	if (nr && !split_parse_distr(nr, &val, &center)) {
-		log_err("fio: random postfix parsing failed\n");
-		free(nr);
-		return 1;
-	}
-
-	free(nr);
-
-	if (center != -1 && (center < 0.00 || center > 1.00)) {
-		log_err("fio: distribution center out of range (0 <= center <= 1.0)\n");
-		return 1;
-	}
-	td->o.random_center.u.f = center;
-
-	if (td->o.random_distribution == FIO_RAND_DIST_ZIPF) {
-		if (val == 1.00) {
-			log_err("fio: zipf theta must different than 1.0\n");
-			return 1;
-		}
-		if (parse_dryrun())
-			return 0;
-		td->o.zipf_theta.u.f = val;
-	} else if (td->o.random_distribution == FIO_RAND_DIST_PARETO) {
-		if (val <= 0.00 || val >= 1.00) {
-			log_err("fio: pareto input out of range (0 < input < 1.0)\n");
-			return 1;
-		}
-		if (parse_dryrun())
-			return 0;
-		td->o.pareto_h.u.f = val;
-	} else {
-		if (val < 0.00 || val >= 100.0) {
-			log_err("fio: normal deviation out of range (0 <= input < 100.0)\n");
-			return 1;
-		}
-		if (parse_dryrun())
-			return 0;
-		td->o.gauss_dev.u.f = val;
-	}
+	// FIXME hardcoded FIO_RAND_DIST_RANDOM due to illegal instruction in threads
 
 	return 0;
 }

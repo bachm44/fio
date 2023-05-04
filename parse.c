@@ -595,7 +595,7 @@ static int __handle_option(const struct fio_option *o, const char *ptr,
 
 		if (ret && !all_skipped)
 			show_option_values(o);
-		else if (fn)
+		else if (fn && data)
 			ret = fn(data, ptr);
 		break;
 	}
@@ -687,7 +687,7 @@ static int __handle_option(const struct fio_option *o, const char *ptr,
 		}
 
 store_option_value:
-		if (fn)
+		if (fn && data)
 			ret = fn(data, &ull);
 		else {
 			if (o->type == FIO_OPT_INT) {
